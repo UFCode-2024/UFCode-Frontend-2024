@@ -7,19 +7,17 @@ import Editor from '@monaco-editor/react'
 import Swal from 'sweetalert2'
 
 function Challenges(props) {
-    const challenge = props.challengeId
-    // props.challenge;
+    const challenge = props.challengeId // props.challenge;
     const studentId = localStorage.getItem("name") // props.id// props.studentId;
+
     const [code, setCode] = useState("")
     const [submitBtnPressed, setSubmitBtnPressed] = useState(false);
-
 
     async function handleCodeSubmission(e) {
         setSubmitBtnPressed(true)
         e.preventDefault()
 
         if (challenge.id == null) {
-            console.log(challenge.id + "teste")
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -35,10 +33,7 @@ function Challenges(props) {
                 language_id: null
             }
 
-            console.log(jsonData)
-
             await submission(jsonData).then(res => {
-                console.log(res.data)
                 console.log("res.data.error  " + res.data.error)
                 if (res.data.error === 'false') {
                     Swal.fire({
