@@ -145,7 +145,32 @@ function Challenges(props) {
         }
     }, [props.position[0], props.position[1]])
 
+
+    //funcao para obter cada caso de teste individual (nesse caso teremos 2 casos de teste por problema)
+    function separarCasos(dados) {
+        const linhas = dados.split('\n');
+        const metade = Math.ceil(linhas.length / 2);
+        const caso1 = linhas.slice(0, metade).join('\n');
+        const caso2 = linhas.slice(metade).join('\n');
+        return { caso1, caso2 };
+      }
+
+
     const renderQuest = () => {
+        
+        //separando os casos de teste para mostrar so o primeiro (exemplo de input/output para uma questao)
+        let input1, expOut1;
+
+        if (currentQuest.input != null) {
+            const { caso1: input1Temp, caso2: input2 } = separarCasos(currentQuest.input);
+            const { caso1: expOut1Temp, caso2: expOut2 } = separarCasos(currentQuest.expectedOutput);
+            input1 = input1Temp;
+            expOut1 = expOut1Temp;
+        } else {
+            input1 = currentQuest.input;
+            expOut1 = currentQuest.expectedOutput;
+        }
+
         return (
             <span className='text'>
                 <div className='gridName box'>
@@ -167,13 +192,13 @@ function Challenges(props) {
                 <div className='gridEntrada box'>
                     <h3 className="boxTitle">Entrada</h3>
                     <span className='info'>
-                        {currentQuest.input}
+                        {input1}
                     </span>
                 </div>
                 <div className='gridSaida box'>
                     <h3 className="boxTitle">Saída</h3>
                     <span className='info'>
-                        {currentQuest.expectedOutput}
+                        {expOut1}
                     </span>
                 </div>
             </span>
