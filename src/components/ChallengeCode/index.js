@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './style.css'
 import { useState } from 'react'
 import { connect } from 'react-redux'
@@ -11,21 +11,35 @@ function Challenges(props) {
     const studentId = localStorage.getItem("name") // props.id// props.studentId;
 
     const [code, setCode] = useState("")
+
+    const [submitButtonPressed, setSubmitButtonPressed] = useState(false)
+
     const [submitBtnPressed, setSubmitBtnPressed] = useState(false);
 
-    async function handleCodeSubmission(e) {
-        setSubmitBtnPressed(true)
-        e.preventDefault()
 
+    async function handleCodeSubmission(e) {
+        e.preventDefault()
+        setSubmitButtonPressed(true)
         if (challenge.id == null) {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Não há questões para sua posição.',
+                title: "Nada por aqui",
+                text: "Nenhuma questão para sua posição",
+                icon: "question"
             })
-            setSubmitBtnPressed(false)
+            setSubmitButtonPressed(false)
         }
         else {
+
+            let casosTestesErrados = 0;
+            let erroCasosTesteCode = ''
+            //loop para rodar todos os casos de teste de uma questao. Nesse caso, as questoes possuem dois casos de teste.
+            for (let i = 1; i <= 2; i++) {
+                const jsonData = {
+                    codeInput: code,
+                    student_id: studentId,
+                    problem_id: challenge.id,
+                    language_id: null,
+                    caso_num: i
             const jsonData = {
                 codeInput: code,
                 student_id: studentId,
@@ -45,32 +59,59 @@ function Challenges(props) {
                     })
                     setSubmitBtnPressed(false)
                 }
-                else {
+                console.log(jsonData)
+                await submission(jsonData).then(res => {
+                    console.log(res.data)
+                    if (res.data.error != 'false') {
+                        casosTestesErrados++;
+                        erroCasosTesteCode = res.data.error
+                    }
+                }).catch(error => {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Algo deu errado...',
-                        text: res.data.error,
-                        confirmButtonColor: '#D92727',
-                        confirmButtonText: 'Ok',
-                    })
-                    setSubmitBtnPressed(false)
+                        title: "Falha",
+                        html: "Erro. Razão do erro: " + error,
+                        icon: "error"
+                    });
+                    setSubmitButtonPressed(false)
+                })
 
-                }
-            }).catch(error => {
+            }
+            if (casosTestesErrados == 0) {
+                Swal.fire({
+                    title: "2/2 casos testes corretos",
+                    text: "Obrigado por resolver o meu problema!",
+                    icon: "success"
+                });
+                setSubmitButtonPressed(false)
+            } else if (casosTestesErrados == 1) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Desapontante, jovem padawan',
-                    text: error,
+                    title: '1/2 casos teste corretos',
+                    text:  erroCasosTesteCode,
                     confirmButtonColor: '#D92727',
-                    confirmButtonText: 'Perdão, mestre',
+                    confirmButtonText: 'Ok',
                 })
-                setSubmitBtnPressed(false)
-            })
+                setSubmitButtonPressed(false)
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '0/2 casos testes corretos',
+                    text: erroCasosTesteCode,
+                    confirmButtonColor: '#D92727',
+                    confirmButtonText: 'Ok',
+                })
+                setSubmitButtonPressed(false)
+            }
         }
 
     }
 
+
     const placeholder = "Ao ler a entrada, use sempre input(), sem nenhum valor dentro dos parênteses. Exemplo: int(input()) para ler um número e convertê-lo para inteiro.\nSeu programa não deve conter acentos. Caso contrário, o sistema irá apontar erro em sua solução.\nAs saídas do seu programa devem seguir o padrão exibido em 'Saída'\n\nDivirta-se, bom jogo!"
+
+
+
+
 
     return (
         <form onSubmit={handleCodeSubmission} id='form-code'>
@@ -84,7 +125,7 @@ function Challenges(props) {
                 />
 
                 <input type='button' onClick={() => setCode("")} className='btn-questao' value='Limpar' />
-                <button type='submit' disabled={submitBtnPressed} value='enviar' className='btn-questao' > Enviar </button>
+                <button type='submit' onClick={handleCodeSubmission} disabled={submitButtonPressed} value='enviar' className='btn-questao'  > Enviar </button>
             </div>
         </form>
     )
