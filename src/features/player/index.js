@@ -39,7 +39,7 @@ function Player(props) {
                 return `-${SPRITE_SIZE*3}px`
             default:
                 console.log('INVALID FACING')
-        }*/
+        }*/ 
     }
 
     //console.log('render player')
