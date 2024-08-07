@@ -124,6 +124,9 @@ function MainPage() {
 								})}
 							</select>
 							<button type="submit" className="form-control form-control-lg mb-3 btn btn-lg btn-block btn-primary">Jogar</button>
+								<div className="form-control form-control-lg mb-3 text-box nome-section">
+							Todos os códigos utilizados no jogo são baseados em problemas reais de programação, responda-os usando python.
+							</div>
 						</div>
 
 					</div>
