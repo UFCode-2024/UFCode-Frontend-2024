@@ -13,9 +13,12 @@ function Challenges(props) {
     const [code, setCode] = useState("")
     const [submitButtonPressed, setSubmitButtonPressed] = useState(false)
 
+    const [isThereError, setIsThereError] = useState(false)
+
     async function handleCodeSubmission(e) {
         e.preventDefault()
         setSubmitButtonPressed(true)
+        
         if (challenge.id == null) {
             console.log(challenge.id + "teste")
             Swal.fire({
@@ -30,6 +33,7 @@ function Challenges(props) {
             let erroCasosTesteCode = ''
             //loop para rodar todos os casos de teste de uma questao. Nesse caso, as questoes possuem dois casos de teste.
             for (let i = 1; i <= 2; i++) {
+                setIsThereError(false)
                 const jsonData = {
                     codeInput: code,
                     student_id: studentId,
@@ -37,48 +41,57 @@ function Challenges(props) {
                     language_id: null,
                     caso_num: i
                 }
-                console.log(jsonData)
+                console.log('data', jsonData)
                 await submission(jsonData).then(res => {
-                    console.log(res.data)
+                    console.log('SUBMISSION', res.data)
                     if (res.data.error != 'false') {
                         casosTestesErrados++;
                         erroCasosTesteCode = res.data.error
                     }
                 }).catch(error => {
-                    Swal.fire({
-                        title: "Falha",
-                        html: "Erro. Razão do erro: " + error,
-                        icon: "error"
-                    });
-                    setSubmitButtonPressed(false)
+                    if (i === 2) {
+                        Swal.fire({
+                            title: "Falha",
+                            html: "Erro. Razão do erro: " + error,
+                            icon: "error",
+                            footer: "É possível que o tempo limite de execução tenha sido atingido."
+                        });
+                        setSubmitButtonPressed(false)
+                    }
+                    setIsThereError(true)
+                    casosTestesErrados += 42; //42 é easteregg - caso não mudasse o valor desta variável, seria computado como sucesso 2/2 na checagem abaixo.
                 })
 
             }
-            if (casosTestesErrados == 0) {
-                Swal.fire({
-                    title: "2/2 casos testes corretos",
-                    text: "Obrigado por resolver o meu problema!",
-                    icon: "success"
-                });
-                setSubmitButtonPressed(false)
-            } else if (casosTestesErrados == 1) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '1/2 casos teste corretos',
-                    text:  erroCasosTesteCode,
-                    confirmButtonColor: '#D92727',
-                    confirmButtonText: 'Ok',
-                })
-                setSubmitButtonPressed(false)
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: '0/2 casos testes corretos',
-                    text: erroCasosTesteCode,
-                    confirmButtonColor: '#D92727',
-                    confirmButtonText: 'Ok',
-                })
-                setSubmitButtonPressed(false)
+            if (isThereError === false) {
+                if (casosTestesErrados == 0) {
+                    Swal.fire({
+                        title: "2/2 casos testes corretos",
+                        text: "Obrigado por resolver o meu problema!",
+                        icon: "success"
+                    });
+                    setSubmitButtonPressed(false)
+                } else if (casosTestesErrados == 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '1/2 casos teste corretos',
+                        text: erroCasosTesteCode,
+                        confirmButtonColor: '#D92727',
+                        confirmButtonText: 'Ok',
+                    })
+                    setSubmitButtonPressed(false)
+                } else if (casosTestesErrados == 2) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '0/2 casos testes corretos',
+                        text: erroCasosTesteCode,
+                        confirmButtonColor: '#D92727',
+                        confirmButtonText: 'Ok',
+                    })
+                    setSubmitButtonPressed(false)
+                } else{
+                    setSubmitButtonPressed(false)
+                }
             }
         }
 
