@@ -9,9 +9,11 @@ import { moveToPosition } from './events'
 import { setTiles } from '../map/environment'
 import { tiles } from '../../data/maps/1'
 
-import Challenges from '../../components/Challenges'
-import ChallengeCode from '../../components/ChallengeCode'
-import { FaHome } from "react-icons/fa";
+import GameChallenge from '../../components/GameChallenge'
+import { TiHome } from "react-icons/ti";
+import { IoIosArrowForward } from "react-icons/io";
+import './style.css'
+
 
 
 
@@ -39,16 +41,27 @@ function World(props) {
 
     //console.log('render world')
     return (
-        <div>
-            <form action="/">
-                <button
-                    style={{
-                        background: "red",
-                        color: "black"
-                    }}
-                ><FaHome /></button>
-            </form>
-
+        <div className='world'>
+            <div className='header'>
+                <form action="/">
+                    <button
+                        style={{
+                            background: "red",
+                            color: "black"
+                        }}
+                    >
+                        <TiHome /></button>
+                </form>
+                <div className='curso-modulo'>
+                    <span> Curso </span>
+                    <IoIosArrowForward />
+                    <span> Módulo </span>
+                </div>
+                <div className='user'>
+                    <img src='https://www.feedingmatters.org/wp-content/uploads/2022/12/Generic-profile-pic.png' alt='user-photo'/>
+                    <span> Usuário </span>
+                </div>
+            </div>
             <div className='web-container'>
 
                 <div
@@ -76,9 +89,9 @@ function World(props) {
 
                 </div>
 
-                <Challenges />
-                <ChallengeCode />
-            </div></div>
+                <GameChallenge />
+            </div>
+            </div>
     )
 }
 

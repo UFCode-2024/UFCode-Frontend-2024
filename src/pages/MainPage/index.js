@@ -84,6 +84,7 @@ function MainPage() {
 	}
 	return (
 		<MainGame>
+			<button onClick={() =>{history.push('/codePage')}}> oi </button>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div className="container overflow-hidden font-weight-bold">
 					<div className="row justify-content-center">

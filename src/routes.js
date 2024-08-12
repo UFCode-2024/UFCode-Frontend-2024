@@ -7,6 +7,7 @@ import MainPage from './pages/MainPage'
 import World from './features/world'
 import CadastroQuestoes from './pages/CadastroQuestoes'
 import ProblemsList from "./pages/ProblemsList"
+import CodePage from './pages/CodePage'
 
 function routes() { // direciona os botões do menu principal
     return (
@@ -18,6 +19,7 @@ function routes() { // direciona os botões do menu principal
             <Route path='/register' component={Register} />
             <Route path='/cadquest' component={CadastroQuestoes} />
             <Route path='/listProblems' component={ProblemsList} />
+            <Route path='/codePage' component={CodePage} />
         </BrowserRouter>
     )
 }

@@ -1,0 +1,17 @@
+.lower-part {
+    display: flex;
+    padding-left: 50px;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    padding: 20px;
+    float: left;
+}
+
+.header button {
+    cursor: pointer;
+    border: 2px  #a31885;
+    font-size: 1.5em;
+}

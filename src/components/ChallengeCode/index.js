@@ -18,7 +18,7 @@ function Challenges(props) {
     async function handleCodeSubmission(e) {
         e.preventDefault()
         setSubmitButtonPressed(true)
-        
+
         if (challenge.id == null) {
             console.log(challenge.id + "teste")
             Swal.fire({
@@ -89,7 +89,7 @@ function Challenges(props) {
                         confirmButtonText: 'Ok',
                     })
                     setSubmitButtonPressed(false)
-                } else{
+                } else {
                     setSubmitButtonPressed(false)
                 }
             }
@@ -108,15 +108,16 @@ function Challenges(props) {
         <form onSubmit={handleCodeSubmission} id='form-code'>
             <div className='code-container'>
                 <Editor
-                    height='650px'
+                    height='600px'
                     theme='vs-dark'
                     defaultLanguage='python'
                     value={code}
                     onChange={(value) => setCode(value)}
                 />
-
-                <input type='button' onClick={() => setCode("")} className='btn-questao' value='Limpar' />
-                <button type='submit' onClick={handleCodeSubmission} disabled={submitButtonPressed} value='enviar' className='btn-questao'  > Enviar </button>
+                <div className='buttons'>
+                    <input type='button' onClick={() => setCode("")} className='btn-questao' value='Limpar' />
+                    <button type='submit' onClick={handleCodeSubmission} disabled={submitButtonPressed} value='enviar' className='btn-questao'  > Enviar </button>
+                </div>
             </div>
         </form>
     )
