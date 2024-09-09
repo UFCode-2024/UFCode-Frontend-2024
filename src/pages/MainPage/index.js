@@ -7,9 +7,55 @@ import { listCourses, listModules } from '../../api/index'
 import { listProblems } from '../../api'
 import Swal from 'sweetalert2'
 import $ from 'jquery'
+import { GoogleLogin, googleLogout } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 
 function MainPage() {
+    // inicio da área login google 
+	const handleSuccessGoogle = (credentialResponse) => {
+		const userObject = jwtDecode(credentialResponse.credential);
+		sessionStorage.setItem('token', credentialResponse.credential);
+		
+		setName(userObject.name);
+		setUserId(userObject.sub);
+		sessionStorage.setItem('userId', userObject.sub);
+		setProfilePic(userObject.picture);
+		setIsLoggedIn(true);
+	};
+	
+	const handleErrorGoogle = () => {
+		console.log('Falha no Login');
+	};
+
+	const handleLogout = () => {
+		googleLogout();
+		sessionStorage.removeItem('token');
+		sessionStorage.removeItem('userId');
+		setIsLoggedIn(false);
+		setName('');
+		setUserId('');
+		setProfilePic('');
+	};
+
+	// permanência do login
+	useEffect(() => {
+		const token = sessionStorage.getItem('token');
+		if (token) {
+			try {
+				const userObject = jwtDecode(token);
+				setName(userObject.name);
+				setUserId(userObject.sub);
+				setProfilePic(userObject.picture);
+				setIsLoggedIn(true);
+		  	} catch (error) {
+				console.error('Token inválido ou expirado:', error);
+				sessionStorage.removeItem('token');
+				setIsLoggedIn(false);
+		  	}
+		}
+	}, []);
+	// fim da área login google
 
 	$(function() {
         $(window).on('popstate', function () {
@@ -23,6 +69,10 @@ function MainPage() {
 	const [modulos, setModulo] = useState([])
 	const [course, setCourse] = useState('any')
 	const [module, setModule] = useState('any')
+	const [name, setName] = useState('')
+	const [userId, setUserId] = useState('')
+	const [profilePic, setProfilePic] = useState('')
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
 
 	useEffect(() => {
 		listCourses().then(response => {
@@ -44,10 +94,19 @@ function MainPage() {
 
 	const onSubmit = (game) => {
 
-		if(game.name.trim() === ""){
+		/*if(name.trim() === ""){
 			Swal.fire({
 				title: "Erro",
 				text: "Preencha seu nome corretamente",
+				icon: "warning",
+			});
+			return
+		} login com o google */
+
+		if(isLoggedIn == false){
+			Swal.fire({
+				title: "Erro",
+				text: "Faça Login para jogar",
 				icon: "warning",
 			});
 			return
@@ -61,8 +120,8 @@ function MainPage() {
 			});
 			return
 		}
-
-		localStorage.setItem("name", game.name)
+		
+		localStorage.setItem("name", name)
 		localStorage.setItem("course", game.course)
 		localStorage.setItem("module", game.module)
 
@@ -88,47 +147,60 @@ function MainPage() {
 				<div className="container overflow-hidden font-weight-bold">
 					<div className="row justify-content-center">
 						<div className="col-md-4 p-3">
-							<input class="form-control form-control-lg mb-3" type="text" placeholder="Nome do jogador" aria-label=".form-control-lg example"
-								{...register("name")}
-							/>
-							<select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
-								labelId="course"
-								id="select"
-								value={course}
-								{...register("course", {
-									required: "Required",
-								})}
-								onChange={(event) => setCourse(event.target.value)}
-								label="course">
-
-								<option value='any'>Selecione a área de estudo</option>
-
-								{cursos.map(x => {
-									return <option value={x.id}>{x.name}</option>
-								})}
-							</select>
-							<select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
-								labelId="module"
-								id="select"
-								value={module}
-								{...register("module", {
-									required: "Required",
-								})}
-								onChange={(event) => setModule(event.target.value)}
-								label="module">
-
-								<option value='any'>Selecione o módulo</option>
-
-								{modulos.map(x => {
-									return <option value={x.id}>{x.name}</option>
-								})}
-							</select>
-							<button type="submit" className="form-control form-control-lg mb-3 btn btn-lg btn-block btn-primary">Jogar</button>
+							<div className="form-group mb-3">
+								{isLoggedIn ? (
+									<div>
+										<div className="profile-container mb-4">
+											<img className="profile-pic" src={profilePic} alt="Profile" />
+											<div className="profile-details">
+												<h2>{name}</h2>
+												<button className="logout-button" onClick={handleLogout}>Sair</button>
+											</div>
+										</div>
+										<select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
+											labelId="course"
+											id="select"
+											value={course}
+											{...register("course", {
+												required: "Required",
+											})}
+											onChange={(event) => setCourse(event.target.value)}
+											label="course">
+											<option value='any'>Selecione a área de estudo</option>
+											{cursos.map(x => (
+												<option key={x.id} value={x.id}>{x.name}</option>
+											))}
+										</select>
+										<select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
+											labelId="module"
+											id="select"
+											value={module}
+											{...register("module", {
+												required: "Required",
+											})}
+											onChange={(event) => setModule(event.target.value)}
+											label="module">
+											<option value='any'>Selecione o módulo</option>
+											{modulos.map(x => (
+												<option key={x.id} value={x.id}>{x.name}</option>
+											))}
+										</select>
+										<button type="submit" className="form-control form-control-lg mb-4 btn btn-lg btn-block btn-primary">Jogar</button>
+									</div>
+								) : (
+									<div className="google-button-container mb-4">
+										<GoogleLogin
+											onSuccess={handleSuccessGoogle}
+											onError={handleErrorGoogle}
+											buttonText="Entrar com Google"
+										/>
+									</div>
+								)}
 								<div className="form-control form-control-lg mb-3 text-box nome-section">
-							Todos os códigos utilizados no jogo são baseados em problemas reais de programação, responda-os usando python.
+									Todos os códigos utilizados no jogo são baseados em problemas reais de programação, responda-os usando Python.
+								</div>
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</form>
