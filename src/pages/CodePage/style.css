@@ -3,13 +3,28 @@
     padding-left: 50px;
 }
 
+.code-page{
+    display: grid;
+} 
+
 .header {
     width: 100%;
-    display: flex;
-    padding: 20px;
-    float: left;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    margin-bottom: 20px;
 }
 
+.curso-modulo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .header button {
     cursor: pointer;
     border: 2px  #a31885;
